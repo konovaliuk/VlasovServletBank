@@ -8,12 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<c:if test="${not empty sessionScope.currentLang}">
-    <fmt:setLocale value="${sessionScope.currentLang}" scope="session"/>
-</c:if>
-<c:if test="${empty sessionScope.currentLang}">
-    <fmt:setLocale value="en_EN" scope="session"/>
-</c:if>
+<fmt:setLocale value="${sessionScope.currentLang}" scope="session"/>
 <fmt:setBundle basename="pages/adminpage"/>
 
 <html>
@@ -22,35 +17,57 @@
 </head>
 <body>
 <!--зафигачить useBeanБ взяв имя фамилию юзера из сессии для приветствия-->
-<!--setProperty, getProperty и т.д.-->
-<!--jstl fmt - идеален для локализации (Надписи, кнопки все остальное)!!!!!
-экзепшен будет с кодом. код, - в проперти файле и перебрасывается из джава кода сам КОД, а мессага будет подби\раться из проперти файла-->
 <fmt:message key="greeting"/>
 <c:out value="${sessionScope.user.userFirstname} ${sessionScope.user.userLastname}))"/><br>
 
-<c:forEach items="${sessionScope.allUserRequests}" var="request">
-    <c:out value="${request}"/>
-    <form method="get" action="/adminpage/confirmrequest">
-        <input type="hidden" value="${request.requestID}"/>
-        <input type="submit" value="confirm request">
-    </form>
+<c:if test="${empty requestScope.allUserRequests}">
+    <fmt:message key="no.requests"/>
+</c:if>
 
-    <form method="get" action="/adminpage/deleterequest">
-        <input type="hidden" value="${request.requestID}"/>
-        <input type="submit" value="delete request">
-    </form>
-    <br>
-</c:forEach>
+<c:if test="${not empty requestScope.allUserRequests}">
+    <table>
+        <tr>
+            <th><fmt:message key="user.login"/></th>
+            <th><fmt:message key="user.balance"/></th>
+            <th><fmt:message key="expected.limit"/></th>
+            <th><fmt:message key="date.of.validity"/></th>
+        </tr>
+        <c:forEach items="${requestScope.allUserRequests}" var="request">
+            <tr>
+                <td>${request.userEmailLogin}</td>
+                <td>${request.userTotalBalance}</td>
+                <td>${request.expectedCreditLimit}</td>
+                <td>
+                    <fmt:message key="account.validity.message"/>
+                    <br>
+                        ${request.dateOfEndCredit}
+                </td>
+                <td>
+                    <form method="post" action="${pageContext.request.contextPath}adminpage/confirmrequest">
+                        <label>
+                            <input hidden name="requestId" value="${request.requestId}"/>
+                        </label>
+                        <input type="submit" value="<fmt:message key="accept.request"/>">
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="${pageContext.request.contextPath}adminpage/deleterequest">
+                        <label>
+                            <input hidden name="requestId" value="${request.requestId}"/>
+                        </label>
+                        <input type="submit" value="<fmt:message key="delete.request"/> ">
+                    </form>
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
+</c:if>
 <br>
 <br>
-<br>
-<form method="get" action="/adminpage/newuserpage">
+<form method="get" action="${pageContext.request.contextPath}adminpage/newuserpage">
     <input type="submit" value="<fmt:message key="newUser.button" />">
 </form>
-
-
-<form action="logout" method="get">
-    <input type="submit" value="<fmt:message key="logout.button"/>"/>
-</form>
+<br>
+<jsp:include page="logout.jsp"/>
 </body>
 </html>

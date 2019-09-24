@@ -7,6 +7,7 @@ import ua.vlasovEugene.servletBankSystem.dao.daoFactory.AbstractDaoFactory;
 import ua.vlasovEugene.servletBankSystem.entity.Account;
 import ua.vlasovEugene.servletBankSystem.entity.PaymentHistory;
 import ua.vlasovEugene.servletBankSystem.utils.TransactionHandler;
+import ua.vlasovEugene.servletBankSystem.utils.exceptions.AccountNumberGenerator;
 import ua.vlasovEugene.servletBankSystem.utils.exceptions.DaoException;
 
 import java.math.BigDecimal;
@@ -35,16 +36,33 @@ public class AccountService {
         this.historyDao = historyDao;
     }
 
-    public void createNewAccount(Account newAccount) throws DaoException {
-        TransactionHandler.runInTransaction(connection -> accountDao.addNewAccount(connection, newAccount));
-    }
+    public void createNewDepositAccount(BigDecimal initialFee, String userLogin) throws DaoException {
+        TransactionHandler.runInTransaction(connection -> {
+            Account newAccount = new Account(
+                    null,
+                    userLogin,
+                    AccountNumberGenerator.getAccountNumber(connection, accountDao),
+                    "deposit",
+                    initialFee,
+                    new BigDecimal("5"),
+                    new BigDecimal("0"),
+                    LocalDateTime.now().plusYears(1),
+                    initialFee
+            );
 
-    public List<Long> getAllAccountsNumbers() throws DaoException {
-        AtomicReference<List<Long>> accountNumbers = new AtomicReference<>();
+            PaymentHistory firstAction = new PaymentHistory(
+                    null,
+                    newAccount.getAccountNumber(),
+                    newAccount.getCurrentBalance(),
+                    newAccount.getCurrentBalance(),
+                    newAccount.getAccountValidity().minusYears(1),
+                    "You have successfully created a new current account!"
+            );
 
-        TransactionHandler.runInTransaction(connection -> accountNumbers.set(accountDao.getAllAccountNumbers(connection)));
+            accountDao.addNewAccount(connection, newAccount);
+            historyDao.addNewActionWithAccount(connection, firstAction);
 
-        return accountNumbers.get();
+        });
     }
 
     public List<PaymentHistory> getHistoryOfCurrentAccount(Long accountNumber) throws DaoException {
@@ -57,21 +75,6 @@ public class AccountService {
         return accountHistory.get();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AccountService that = (AccountService) o;
-        return FACTORY.equals(that.FACTORY) &&
-                Objects.equals(userDao, that.userDao) &&
-                Objects.equals(accountDao, that.accountDao) &&
-                Objects.equals(historyDao, that.historyDao);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(FACTORY, userDao, accountDao, historyDao);
-    }
 
     public void refillCurrentAccount(Long accountNumber, BigDecimal summ) throws DaoException {
         TransactionHandler.runInTransaction(connection -> {
@@ -81,7 +84,6 @@ public class AccountService {
 
             accountDao.changeBalanceOfCurrentAccount(connection, accountNumber,currentBalance);
             LocalDateTime currentDate = LocalDateTime.now();
-
 
             PaymentHistory newAction = new PaymentHistory();
             newAction.setCurrentBalance(currentBalance);
@@ -98,6 +100,7 @@ public class AccountService {
         AtomicBoolean result = new AtomicBoolean(false);
 
         TransactionHandler.runInTransaction(connection -> {
+            //todo не срабатывает
             if (accountDao.getCurrentAccount(connection, accountNumber) != null)
                 result.set(true);
         });
@@ -111,20 +114,19 @@ public class AccountService {
         TransactionHandler.runInTransaction(connection -> {
             Account account = accountDao.getCurrentAccount(connection,currentAccount);
 
+
             if(account.getAccountType().equals("deposit")){
-                BigDecimal totalBalance = account.getCurrentBalance();
-                if (totalBalance.subtract(countOfMoney).signum() > 0)
+                if (account.getCurrentBalance().subtract(account.getDeposit()).
+                        subtract(countOfMoney).signum() > 0)
                     result.set(true);
             }
 
             if(account.getAccountType().equals("credit")){
-                BigDecimal totalBalance = account.getCurrentBalance().add(account.getCreditLimit());
-                if (totalBalance.subtract(countOfMoney).signum() > 0)
+                if (account.getCurrentBalance().add(account.getCreditLimit())
+                        .subtract(countOfMoney).signum() > 0)
                     result.set(true);
             }
-
         });
-
         return result.get();
     }
 
@@ -182,8 +184,23 @@ public class AccountService {
                     String.format("Transfer to account No%s to another bank",dummyRecipient)
 
             );
-
             historyDao.addNewActionWithAccount(connection,forDonorAcc);
         });
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AccountService that = (AccountService) o;
+        return FACTORY.equals(that.FACTORY) &&
+                Objects.equals(userDao, that.userDao) &&
+                Objects.equals(accountDao, that.accountDao) &&
+                Objects.equals(historyDao, that.historyDao);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(FACTORY, userDao, accountDao, historyDao);
     }
 }

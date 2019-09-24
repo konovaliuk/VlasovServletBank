@@ -25,42 +25,37 @@ public class LoginUser implements Command {
     }
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
         String login = request.getParameter("email");
         String password = request.getParameter("password");
-        User user = null;
+        User user;
 
-        try {
-            user = service.getUserByLogin(login);
-        } catch (DaoException e){
-            request.setAttribute("exceptionError", e.getMessage());
+        user = service.getUserByLogin(login);
+
+        if (user != null) {
+            if (checkUser(request, password, user)) {
+                forwardUserToPage(user, response);
+                return;
+            }
+        } else {
+            request.setAttribute("wrongLogin", true);
         }
-
-         if (user!=null){
-             if (checkUser(request, password, user)) {
-                 redirectUserToPage(user, response);
-                 return;
-             }
-         } else {
-             request.setAttribute("wrongLogin","wrong.login");
-             request.getRequestDispatcher(INDEXPAGE).forward(request,response);
-         }
-         request.getRequestDispatcher(INDEXPAGE).forward(request,response);
+        request.getRequestDispatcher(INDEXPAGE).forward(request, response);
     }
 
     private boolean checkUser(HttpServletRequest request, String password, User user) {
-        if(user.getUserPassword().equals(String.valueOf(password))){
+        if (user.getUserPassword().equals(password)) {
             user.setUserPassword(null);
             HttpSession session = request.getSession();
             session.setAttribute("user",user);
             return true;
 
         }
-        request.setAttribute("wrongPassword","wrong.password");
+        request.setAttribute("wrongPassword", true);
         return false;
     }
 
-    private void redirectUserToPage(User userForSession,HttpServletResponse response) throws IOException {
+    private void forwardUserToPage(User userForSession, HttpServletResponse response) throws IOException {
         String userRole = userForSession.getUserRole();
         if(userRole.equalsIgnoreCase("user"))
             response.sendRedirect("/userpage");

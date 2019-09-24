@@ -1,5 +1,6 @@
 package ua.vlasovEugene.servletBankSystem.controller;
 
+import org.apache.log4j.Logger;
 import ua.vlasovEugene.servletBankSystem.service.*;
 import ua.vlasovEugene.servletBankSystem.utils.exceptions.DaoException;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 public class CreateUser implements Command {
     private UserService userService;
+    private static final Logger LOG = Logger.getLogger(CreateUser.class);
     private final String NEW_USER_PAGE = "/WEB-INF/view/newuser.jsp";
 
     public CreateUser() {
@@ -24,42 +26,39 @@ public class CreateUser implements Command {
         this.userService = userService;
     }
 
-    /**
-     * The method creates a new user,
-     * a new deposit account for this user,
-     * a new event about account creation
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
-     */
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
         String login = request.getParameter("email");
         String password = request.getParameter("password");
 
+        LOG.info("get login and password from request");
 
-        try {
-            if(!(userService.currentUSerIsExist(login,password))){
-                Map<String,String> parameters = new HashMap<>();
 
-                parameters.put("login",login);
-                parameters.put("password",password);
-                parameters.put("firstname",request.getParameter("firstname"));
-                parameters.put("lastname",request.getParameter("lastname"));
-                parameters.put("firstpal",request.getParameter("firstpal"));
+        if (!(userService.currentUSerIsExist(login, password))) {
+            Map<String, String> parameters = new HashMap<>();
 
-                userService.addNewUser(parameters);
+            parameters.put("login", login);
+            parameters.put("password", password);
+            parameters.put("firstname", request.getParameter("firstname"));
+            parameters.put("lastname", request.getParameter("lastname"));
+            parameters.put("deposit", request.getParameter("deposit"));
 
-                request.setAttribute("successOperation",true);
-            } else {
-                request.setAttribute("userisexist",true);
-            }
-        } catch (DaoException e) {
-            request.setAttribute("exeptionError", e.getMessage());
-        } finally {
-            request.getRequestDispatcher(NEW_USER_PAGE).forward(request,response);
+            LOG.info(String.format("A Map with value: %s, %s, %s, %s, %s was created",
+                    parameters.get("login"), parameters.get("password"), parameters.get("firstname"),
+                    parameters.get("lastname"), parameters.get("deposit")));
+
+            userService.addNewUser(parameters);
+
+            request.setAttribute("successOperation", true);
+            LOG.info("parameter 'successOperation' is true");
+        } else {
+            request.setAttribute("userisexist", true);
+            LOG.info("parameter 'userisexist' is true");
         }
+
+        LOG.info("forvard to " + NEW_USER_PAGE);
+        request.getRequestDispatcher(NEW_USER_PAGE).forward(request, response);
+
     }
 
     @Override

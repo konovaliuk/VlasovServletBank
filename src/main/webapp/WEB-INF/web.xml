@@ -5,6 +5,10 @@
          version="3.1">
     <display-name>EpamBankSystem</display-name>
 
+    <error-page>
+        <location>/WEB-INF/view/errorpage.jsp</location>
+    </error-page>
+
     <servlet>
         <servlet-name>FrontController</servlet-name>
         <servlet-class>ua.vlasovEugene.servletBankSystem.controller.servlets.FrontController</servlet-class>
@@ -26,7 +30,7 @@
 
     <!--<filter>
         <filter-name>UserFilter</filter-name>
-        <filter-class>ua.vlasovEugene.epamBankSystem.filter.UserFilter</filter-class>
+        <filter-class>ua.vlasovEugene.servletBankSystem.filter.UserFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>UserFilter</filter-name>
@@ -35,14 +39,14 @@
 
     <filter>
         <filter-name>AdminFilter</filter-name>
-        <filter-class>ua.vlasovEugene.epamBankSystem.filter.AdminFilter</filter-class>
+        <filter-class>ua.vlasovEugene.servletBankSystem.filter.AdminFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AdminFilter</filter-name>
         <url-pattern>/adminpage*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
 
-    <filter>
+    <!--<filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>ua.vlasovEugene.epamBankSystem.filter.AuthFilter</filter-class>
     </filter>

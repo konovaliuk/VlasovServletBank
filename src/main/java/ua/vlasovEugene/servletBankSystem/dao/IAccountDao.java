@@ -6,6 +6,7 @@ import ua.vlasovEugene.servletBankSystem.entity.User;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,4 +25,6 @@ public interface IAccountDao {
     void changeBalanceOfCurrentAccount(Connection connection, Long accountNumber, BigDecimal currentBalance) throws SQLException;
 
     Map<String, List<Account>> getAllAccountsOfCurrentUser(Connection connection, User currentUser) throws SQLException;
+
+    BigDecimal getTotalUsersBalanceAfter6Year(Connection connection, User user, LocalDateTime afterSixMonts) throws SQLException;
 }

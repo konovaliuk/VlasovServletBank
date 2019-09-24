@@ -12,8 +12,8 @@ import java.util.Objects;
 
 public class MoneySender implements Command {
     private AccountService service;
-    private final String SUCCESS_PAGE = "/WEB-INF/view/userhistorypage.jsp";
-    private final String ERROR_PAGE = "/WEB-INF/view/currentBankOperation.jsp";
+
+    private final String ERROR_PAGE = "/WEB-INF/view/currentAccOperation.jsp";
 
     public MoneySender() {
         service = new AccountService();
@@ -24,43 +24,39 @@ public class MoneySender implements Command {
     }
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, DaoException {
         Long currentAccount = Long.valueOf((String) request.getSession().getAttribute("accountNumber"));
         BigDecimal countOfMoney = new BigDecimal(request.getParameter("money").replace(',','.'));
         Long recipientAccountNumber = Long.valueOf(request.getParameter("account"));
         boolean intrabankOperation = request.getParameter("typeOfTransaction").equals("currentBank");
 
-        String targetPage = SUCCESS_PAGE;
-        try{
-            if(service.currentAccountHaveEnoughMoney(currentAccount,countOfMoney)){
+        if (service.currentAccountHaveEnoughMoney(currentAccount, countOfMoney)) {
 
-                if(intrabankOperation){
-                    if(service.recipientAccountIsExist(recipientAccountNumber)){
-                        service.sendMoneyToAcc(currentAccount, recipientAccountNumber, countOfMoney);
-                        request.setAttribute("sucessOperation", true);
-                        request.setAttribute("history", service.getHistoryOfCurrentAccount(currentAccount));
-                    } else {
-                        request.setAttribute("noExistAccount", true);
-                        targetPage = ERROR_PAGE;
-                    }
-                } else {
-                    String dummyRecipient = String.valueOf(recipientAccountNumber);
-                    service.sendMoneyToAcc(currentAccount, dummyRecipient, countOfMoney);
-                    request.setAttribute("sucessOperation", true);
-                    request.setAttribute("history", service.getHistoryOfCurrentAccount(currentAccount));
-                }
+            doTransaction(request, response, currentAccount, countOfMoney,
+                    recipientAccountNumber, intrabankOperation);
 
-
-            } else {
-                request.setAttribute("noEnoughMoney", true);
-                targetPage = ERROR_PAGE;
-            }
-        } catch (DaoException e){
-            e.printStackTrace();
-            request.setAttribute("exceptionError",e.getMessage());
+        } else {
+            request.setAttribute("noEnoughMoney", true);
+            request.getRequestDispatcher(ERROR_PAGE).forward(request, response);
         }
+    }
 
-        request.getRequestDispatcher(targetPage).forward(request, response);
+    private void doTransaction(HttpServletRequest request, HttpServletResponse response, Long currentAccount, BigDecimal countOfMoney,
+                               Long recipientAccountNumber, boolean intrabankOperation) throws DaoException, ServletException, IOException {
+
+        if (intrabankOperation) {
+            if (service.recipientAccountIsExist(recipientAccountNumber)) {
+                service.sendMoneyToAcc(currentAccount, recipientAccountNumber, countOfMoney);
+                response.sendRedirect("/userpage/accountoperation");
+            } else {
+                request.setAttribute("noExistAccount", true);
+                request.getRequestDispatcher(ERROR_PAGE).forward(request, response);
+            }
+        } else {
+            String dummyRecipient = String.valueOf(recipientAccountNumber);
+            service.sendMoneyToAcc(currentAccount, dummyRecipient, countOfMoney);
+            response.sendRedirect("/userpage/accountoperation");
+        }
     }
 
     @Override

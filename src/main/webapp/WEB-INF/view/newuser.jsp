@@ -15,14 +15,14 @@
 <c:if test="${empty sessionScope.currentLang}">
     <fmt:setLocale value="en_EN" scope="session"/>
 </c:if>
-<fmt:setBundle basename="pages/newuserpage"/>
+<fmt:setBundle basename="pages/newuser"/>
 
 <html>
 <head>
     <title>Title</title>
 </head>
 <body>
-<form method="post" action="/adminpage/addnewuser">
+<form method="post" action="${pageContext.request.contextPath}adminpage/addnewuser">
     <label>
         <input name="firstname" placeholder="<fmt:message key="user.name"/>" type="text" required>
     </label><br>
@@ -39,7 +39,8 @@
         <input name="password" placeholder="<fmt:message key="password"/>" type="password" required>
     </label><br>
     <label>
-        <input name="firstpal" placeholder="<fmt:message key="first.pal"/>" type="text" pattern="^[0-9]*[.,]?[0-9]+$" required>
+        <input name="deposit" placeholder="<fmt:message key="deposit"/>" type="text" pattern="^[0-9]*[.,]?[0-9]+$"
+               required>
     </label>
     <fmt:message key="positive.number"/><br>
     <input type="submit" value="<fmt:message key="create.user"/>"><br>
@@ -49,7 +50,7 @@
 </c:if>
 <c:out value="${requestScope.exceptionError}"/>
 
-<form method="get" action="/adminpage">
+<form method="get" action="${pageContext.request.contextPath}adminpage">
     <input type="submit" value="<fmt:message key="adminmenu.back"/> "/>
 </form>
 

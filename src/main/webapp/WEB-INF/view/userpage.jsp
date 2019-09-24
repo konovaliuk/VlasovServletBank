@@ -15,46 +15,40 @@
 <html>
 <head>
     <title>Title</title>
-    <style type="text/css">
-        table.t_example {
-            background-color: #cccccc;
-            width: 400px
-        }
-        .t_example tr {
-            background-color: #ffffff;
-            height: 100px
-        }
-    </style>
 </head>
 <body>
 <fmt:message key="greeting.user"/> <!--Обьеденить 2 тега в1 кастомный!!!-->
 <c:out value="${sessionScope.user.userFirstname} ${sessionScope.user.userLastname}))"/>
 <br>
 <br>
-<c:if test="${empty requestScope.accounts}">
+<c:if test="${empty requestScope.depositAccounts}">
     <fmt:message key="no.accounts"/>
 </c:if>
+<br>
+<form action="${pageContext.request.contextPath}userpage/createdepositeacc" method="post">
+    <input type="submit" value="<fmt:message key="create.new.acc"/> ">
+</form>
 <fmt:message key="customer.deposit.accounts"/><br>
-<table class="t_example">
+<table>
     <tr>
         <th><fmt:message key="account.number"/></th>
-        <th><fmt:message key="account.type"/></th>
         <th><fmt:message key="current.balance"/></th>
+        <th><fmt:message key="deposit"/></th>
         <th><fmt:message key="interest.rate"/></th>
         <th><fmt:message key="account.validity"/></th>
     </tr>
     <c:forEach items="${requestScope.depositAccounts}" var="depAcc">
         <tr>
             <td>${depAcc.accountNumber}</td>
-            <td>${depAcc.accountType}</td>
             <td>${depAcc.currentBalance}</td>
+            <td>${depAcc.deposit}</td>
             <td>${depAcc.interestRate}</td>
             <td>
                 <fmt:message key="account.validity.message"/>
                     ${depAcc.accountValidity}
             </td>
             <td>
-                <form action="/userpage/accountoperation" method="post">
+                <form action="${pageContext.request.contextPath}userpage/accountoperation" method="post">
                     <input name="accountNumber" type="hidden" value="${depAcc.accountNumber}">
                     <input type="submit" value="<fmt:message key="account.details"/>"/>
                 </form>
@@ -62,12 +56,21 @@
         </tr>
     </c:forEach>
 </table>
+<br>
+<br>
+<c:if test="${sessionScope.user.creditRequestStatus==true}">
+    <fmt:message key="credit.request.sended"/>
+</c:if>
+<c:if test="${empty requestScope.creditAccounts && sessionScope.user.creditRequestStatus==false}">
+    <form action="${pageContext.request.contextPath}userpage/createcreditacc" method="get">
+        <input type="submit" value="<fmt:message key="button.account.request"/>"/>
+    </form>
+</c:if>
 <c:if test="${not empty requestScope.creditAccounts}">
     <fmt:message key="customer.credit.accounts"/><br>
-    <table class="t_example">
+    <table>
         <tr>
             <th><fmt:message key="account.number"/></th>
-            <th><fmt:message key="account.type"/></th>
             <th><fmt:message key="current.balance"/></th>
             <th><fmt:message key="limit.for.credit"/></th>
             <th><fmt:message key="interest.rate"/></th>
@@ -76,7 +79,6 @@
         <c:forEach items="${requestScope.creditAccounts}" var="credAcc">
             <tr>
                 <td>${credAcc.accountNumber}</td>
-                <td>${credAcc.accountType}</td>
                 <td>${credAcc.currentBalance}</td>
                 <td>${credAcc.creditLimit}</td>
                 <td>${credAcc.interestRate}</td>
@@ -85,7 +87,7 @@
                         ${credAcc.accountValidity}
                 </td>
                 <td>
-                    <form action="/userpage/accountoperation" method="post">
+                    <form action="${pageContext.request.contextPath}userpage/accountoperation" method="post">
                         <input name="accountNumber" type="hidden" value="${credAcc.accountNumber}">
                         <input type="submit" value="<fmt:message key="account.details"/>"/>
                     </form>
@@ -96,12 +98,6 @@
 </c:if>
 <br>
 <br>
-<form action="userpage/createcreditacc" method="get">
-    <input type="submit" value="<fmt:message key="account.request"/>"/>
-</form>
-
-<form action="/logout" method="get">
-    <input type="submit" value="<fmt:message key="button.logout"/>"/>
-</form>
+<jsp:include page="logout.jsp"/>
 </body>
 </html>

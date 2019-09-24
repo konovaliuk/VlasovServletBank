@@ -14,8 +14,7 @@ public class UserFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        HttpSession session = request.getSession();
-        User userFromSession = (User) session.getAttribute("user");
+        User userFromSession = (User) request.getSession().getAttribute("user");
 
         if(userFromSession.getUserRole().equalsIgnoreCase("user")){
             filterChain.doFilter(servletRequest,servletResponse);

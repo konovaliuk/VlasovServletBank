@@ -1,5 +1,6 @@
 package ua.vlasovEugene.servletBankSystem.controller;
 
+import org.apache.log4j.Logger;
 import ua.vlasovEugene.servletBankSystem.service.RequestService;
 import ua.vlasovEugene.servletBankSystem.utils.exceptions.DaoException;
 
@@ -12,6 +13,7 @@ import java.util.Objects;
 
 public class GetAdminPage implements Command {
     private RequestService service;
+    private final static Logger LOG = Logger.getLogger(GetAdminPage.class);
     private final String ADMINPAGE =  "/WEB-INF/view/adminpage.jsp";
 
     public GetAdminPage() {
@@ -22,25 +24,10 @@ public class GetAdminPage implements Command {
         this.service = service;
     }
 
-    /**
-     * Before moving to the admin page for the admin, a list of all applications for opening credit accounts
-     * from all users is formed and displayed in the table
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
-     */
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        try {
-            session.setAttribute("allUserRequests", service.getAllRequests());
-        } catch (DaoException e) {
-            request.setAttribute("exceptionError", e.getMessage());
-        } finally {
-            request.getRequestDispatcher(ADMINPAGE).forward(request,response);
-        }
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
+        request.setAttribute("allUserRequests", service.getAllRequests());
+        request.getRequestDispatcher(ADMINPAGE).forward(request, response);
     }
 
     @Override

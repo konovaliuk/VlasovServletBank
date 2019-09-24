@@ -38,15 +38,16 @@ create table if not exists user
 
 create table if not exists account
 (
-    account_ID int auto_increment
+    account_ID       int auto_increment
         primary key,
-    account_owner varchar(100) null,
-    account_number int null,
-    account_type varchar(100) null,
-    current_balance decimal null,
-    an_initial_fee decimal null,
-    interest_rate decimal null,
-    limit_for_credit decimal null,
+    account_owner    varchar(100)   null,
+    account_number   int            null,
+    account_type     varchar(100)   null,
+    current_balance  decimal(20, 2) null,
+    interest_rate    decimal(3)     null,
+    credit_limit     decimal(20, 2) null,
+    account_validity timestamp      null,
+    deposit          decimal(20, 2) null,
     constraint account_account_number_uindex
         unique (account_number),
     constraint account_account_type_acc_type_value_fk
@@ -57,24 +58,30 @@ create table if not exists account
 
 create table if not exists credit_opening_request
 (
-    request_ID int auto_increment
+    request_ID            int auto_increment
         primary key,
-    user_email_login varchar(100) null,
-    percent_of_account decimal null,
+    user_email_login      varchar(100)   null,
+    user_total_balance    decimal(20, 2) null,
+    expected_credit_limit decimal(20, 2) null,
+    date_of_end_credit    timestamp      null,
     constraint credit_opening_request_user_user_login_emali_fk
         foreign key (user_email_login) references user (user_login_email)
 );
 
 create table if not exists payment_history
 (
-    transaction_ID int auto_increment
+    transaction_ID      int auto_increment
         primary key,
-    account_number int null,
-    transaction_amount decimal null,
-    current_balance decimal null,
-    date_of_transaction timestamp null,
-    notification varchar(500) null,
+    account_number      int            null,
+    transaction_amount  decimal(20, 2) null,
+    current_balance     decimal(20, 2) null,
+    date_of_transaction timestamp      null,
+    notification        varchar(500)   null,
     constraint payment_history_account_account_number_fk
         foreign key (account_number) references account (account_number)
 );
 
+
+INSERT INTO `epamproject`.`user`
+(`user_firstname`, `user_secondname`, `user_login_email`, `user_password`, `user_role`, `user_credit_acc`)
+VALUES ('MAIN', 'ADMINISTRATOR', 'admin', '111', 'admin', DEFAULT);

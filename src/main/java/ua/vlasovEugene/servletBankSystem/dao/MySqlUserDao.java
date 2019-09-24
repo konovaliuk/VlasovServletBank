@@ -17,7 +17,11 @@ public class MySqlUserDao implements IUserDao {
     private final String FIND_USER_BY_EMAIL_AND_PASSWORD = "SELECT * FROM user WHERE user_login_email = ? " +
             "AND user_password = ?";
     private final String FIND_USER_BY_EMAIL = "SELECT * FROM user WHERE user_login_email = ?";
-    private final String ADD_NEW_USER = "INSERT INTO user VALUES (null,?,?,?,?,?,?)";
+    private final String ADD_NEW_USER = "INSERT INTO user VALUES (null,?,?,?,?,?,?,?)";
+    private final String CHANGE_CREDIT_REQUEST_STATUS = "UPDATE user SET credit_request_status = ? " +
+            "WHERE user_login_email = ?";
+    private final String CHANGE_CREDIT_ACCOUNT_STATUS = "UPDATE user SET user_credit_acc = ? " +
+            "WHERE user_login_email = ?";
 
     /**
      * The method determines whether a user exists with such a username and password in the table
@@ -65,6 +69,7 @@ public class MySqlUserDao implements IUserDao {
                 currentUser.setUserLoginEmail(resultSet.getString("user_login_email"));
                 currentUser.setUserRole(resultSet.getString("user_role"));
                 currentUser.setUserHaveCreditAcc(resultSet.getBoolean("user_credit_acc"));
+                currentUser.setCreditRequestStatus(resultSet.getBoolean("send_credit_request"));
             }
         }
         return currentUser;
@@ -85,6 +90,7 @@ public class MySqlUserDao implements IUserDao {
             statement.setString(4,newUser.getUserPassword());
             statement.setString(5,newUser.getUserRole());
             statement.setBoolean(6,newUser.getUserHaveCreditAcc());
+            statement.setBoolean(7, newUser.getCreditRequestStatus());
             statement.executeUpdate();
         }
     }
@@ -97,17 +103,38 @@ public class MySqlUserDao implements IUserDao {
             statement.setString(1,login);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-                user = new User();
-                user.setUserId(resultSet.getInt("user_id"));
-                user.setUserFirstname(resultSet.getString("user_firstname"));
-                user.setUserLastname(resultSet.getString("user_secondname"));
-                user.setUserLoginEmail(resultSet.getString("user_login_email"));
-                user.setUserPassword(resultSet.getString("user_password"));
-                user.setUserRole(resultSet.getString("user_role"));
-                user.setUserHaveCreditAcc(resultSet.getBoolean("user_credit_acc"));
+                user = new User(
+                        resultSet.getInt("user_id"),
+                        resultSet.getString("user_firstname"),
+                        resultSet.getString("user_secondname"),
+                        resultSet.getString("user_login_email"),
+                        resultSet.getString("user_password"),
+                        resultSet.getString("user_role"),
+                        resultSet.getBoolean("user_credit_acc"),
+                        resultSet.getBoolean("credit_request_status")
+                );
             }
         }
         return user;
+    }
+
+    @Override
+    public void changeCreditRequestStatusOfCurrentUser(Connection connection, String userLoginEmail, Boolean requestStatusFlag)
+            throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(CHANGE_CREDIT_REQUEST_STATUS)) {
+            statement.setBoolean(1, requestStatusFlag);
+            statement.setString(2, userLoginEmail);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void changeCreditStatusOfCurrentUser(Connection connection, String userLoginEmail, Boolean isUserHaveCreditAcc) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(CHANGE_CREDIT_ACCOUNT_STATUS)) {
+            statement.setBoolean(1, isUserHaveCreditAcc);
+            statement.setString(2, userLoginEmail);
+            statement.executeUpdate();
+        }
     }
 
     @Override

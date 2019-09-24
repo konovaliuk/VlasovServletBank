@@ -17,4 +17,8 @@ public interface IUserDao {
     void addNewUser(Connection connection, User newUser) throws SQLException;
 
     User getUserByLogin(Connection connection, String login) throws SQLException;
+
+    void changeCreditRequestStatusOfCurrentUser(Connection connection, String userLoginEmail, Boolean requestStatusFlag) throws SQLException;
+
+    void changeCreditStatusOfCurrentUser(Connection connection, String userLoginEmail, Boolean isUserHaveCreditAcc) throws SQLException;
 }

@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,14 +26,11 @@ public class GetUserPage implements Command {
 
     private String USERPAGE = "/WEB-INF/view/userpage.jsp";
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String,List<Account>>accounts = new HashMap<>();
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
+        Map<String, List<Account>> accounts;
         User currentUser = (User) request.getSession().getAttribute("user");
-        try {
-            accounts = service.getAllCurrentUserAccounts(currentUser);
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
+        accounts = service.getAllCurrentUserAccounts(currentUser);
+
         request.setAttribute("depositAccounts", accounts.get("depositAccounts"));
         request.setAttribute("creditAccounts", accounts.get("creditAccounts"));
         request.getRequestDispatcher(USERPAGE).forward(request,response);

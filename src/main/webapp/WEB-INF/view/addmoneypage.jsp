@@ -20,11 +20,15 @@
     <title>Title</title>
 </head>
 <body>
-<form method="post" action="/userpage/refill">
-    <input type="text" name="summ" placeholder="<fmt:message key="summ"/>" pattern="^[0-9]*[.,]?[0-9]+$" required>
+<form method="post" action="${pageContext.request.contextPath}accountoperation">
+    <label>
+        <input hidden name="command" value="refillAcc">
+    </label>
+    <label>
+        <input type="text" name="summ" placeholder="<fmt:message key="summ"/>" pattern="^[0-9]*[.,]?[0-9]+$" required>
+    </label>
     <fmt:message key="positive.number"/><br>
     <input type="submit" value="<fmt:message key="button.refill"/> ">
 </form>
-<c:out value="${requestScope.exception}"/>
 </body>
 </html>

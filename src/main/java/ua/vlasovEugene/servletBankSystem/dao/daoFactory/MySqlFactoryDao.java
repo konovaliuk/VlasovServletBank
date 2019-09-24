@@ -21,6 +21,6 @@ public class MySqlFactoryDao extends AbstractDaoFactory {
 
     @Override
     public ICreditRequestDao getRequestDao() {
-        return new MySqlCreditReuestDao();
+        return new MySqlCreditRequestDao();
     }
 }

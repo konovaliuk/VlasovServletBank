@@ -6,6 +6,7 @@ import ua.vlasovEugene.servletBankSystem.entity.Account;
 import ua.vlasovEugene.servletBankSystem.entity.PaymentHistory;
 import ua.vlasovEugene.servletBankSystem.entity.User;
 import ua.vlasovEugene.servletBankSystem.utils.TransactionHandler;
+import ua.vlasovEugene.servletBankSystem.utils.exceptions.AccountNumberGenerator;
 import ua.vlasovEugene.servletBankSystem.utils.exceptions.DaoException;
 
 import java.math.BigDecimal;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,17 +26,21 @@ public class UserService {
     private IAccountDao accountDao;
     private IUserDao userDao;
     private IAccountHistoryDao accHistoryDao;
+    private ICreditRequestDao creditReqDao;
 
     public UserService() {
         accountDao = FACTORY.getAccountDao();
         userDao = FACTORY.getUserDao();
         accHistoryDao = FACTORY.getAccountHistoryDao();
+        creditReqDao = FACTORY.getRequestDao();
     }
 
-    public UserService(IAccountDao accountDao, IUserDao userDao, IAccountHistoryDao accHistoryDao) {
+    public UserService(IAccountDao accountDao, IUserDao userDao, IAccountHistoryDao accHistoryDao,
+                       ICreditRequestDao creditReqDao) {
         this.accountDao = accountDao;
         this.userDao = userDao;
         this.accHistoryDao = accHistoryDao;
+        this.creditReqDao = creditReqDao;
     }
 
     public boolean currentUSerIsExist(String login, String password) throws DaoException {
@@ -61,7 +65,7 @@ public class UserService {
 
     public void addNewUser(Map<String,String> parameters) throws DaoException {
         TransactionHandler.runInTransaction(connection -> {
-            BigDecimal firstPal = new BigDecimal(parameters.get("firstpal").replace(',','.'));
+            BigDecimal firstPal = new BigDecimal(parameters.get("deposit").replace(',', '.'));
 
             User newUser = createNewUser(parameters.get("firstname"),
                     parameters.get("lastname"),
@@ -94,35 +98,20 @@ public class UserService {
         return result;
     }
 
-    public Account createNewDepositAccount(Connection connection, String login, BigDecimal firstpal) throws SQLException {
-        LocalDateTime currentDate = LocalDateTime.now();
+    private Account createNewDepositAccount(Connection connection, String login, BigDecimal firstpal) throws SQLException {
+        LocalDateTime currentDate = LocalDateTime.now().plusYears(1);
 
         Account result = new Account();
         result.setAccountOwner(login);
-        result.setAccountNumber(createAccountNumber(connection));
+        result.setAccountNumber(AccountNumberGenerator.getAccountNumber(connection, accountDao));
         result.setAccountType("deposit");
+        result.setDeposit(firstpal);
         result.setCurrentBalance(firstpal);
         result.setInterestRate(DEPOSIT_INTEREST_RATE);
         result.setCreditLimit(new BigDecimal("0"));
         result.setAccountValidity(currentDate);
 
         return result;
-    }
-
-    private long createAccountNumber(Connection connection) throws SQLException {
-        List<Long> allAccountsNumbers = accountDao.getAllAccountNumbers(connection);
-        int endOfRange = 999999999;
-        int startOfRange = 99999999;
-
-        Random random = new Random();
-        int range = endOfRange - startOfRange+1;
-        long accountNumber = random.nextInt(range)+1;
-
-        while (allAccountsNumbers.contains(accountNumber)){
-            accountNumber = random.nextInt(range)+1;
-        }
-
-        return accountNumber;
     }
 
     private User createNewUser(String firstname, String lastname, String login, String password) {
@@ -134,20 +123,38 @@ public class UserService {
         result.setUserPassword(password);
         result.setUserRole("user");
         result.setUserHaveCreditAcc(false);
+        result.setCreditRequestStatus(false);
 
         return result;
     }
 
+    public BigDecimal getTotalBalanceAfterHalfYear(User user, LocalDateTime afterSixMonts) throws DaoException {
+        AtomicReference<BigDecimal> result = new AtomicReference<>();
+
+        TransactionHandler.runInTransaction(connection -> {
+            result.set(accountDao.getTotalUsersBalanceAfter6Year(connection, user, afterSixMonts));
+        });
+
+        return result.get();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserService that = (UserService) o;
-        return Objects.equals(accountDao, that.accountDao) &&
+        return Objects.equals(FACTORY, that.FACTORY) &&
+                Objects.equals(DEPOSIT_INTEREST_RATE, that.DEPOSIT_INTEREST_RATE) &&
+                Objects.equals(accountDao, that.accountDao) &&
                 Objects.equals(userDao, that.userDao) &&
-                Objects.equals(accHistoryDao, that.accHistoryDao);
+                Objects.equals(accHistoryDao, that.accHistoryDao) &&
+                Objects.equals(creditReqDao, that.creditReqDao);
     }
 
+    @Override
     public int hashCode() {
-        return Objects.hash(accountDao, userDao, accHistoryDao);
+        return Objects.hash(FACTORY, DEPOSIT_INTEREST_RATE,
+                FIRST_NOTE_FOR_PAYMENT_HISTORY, accountDao, userDao,
+                accHistoryDao, creditReqDao);
     }
 }

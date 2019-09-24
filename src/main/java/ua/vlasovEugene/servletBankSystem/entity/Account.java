@@ -19,13 +19,14 @@ public class Account {
   private BigDecimal interestRate;
   private BigDecimal creditLimit;
   private LocalDateTime accountValidity;
+    private BigDecimal deposit;
 
   public Account() {
   }
 
   public Account(Integer accountId, String accountOwner, Long accountNumber,
                  String accountType, BigDecimal currentBalance, BigDecimal interestRate,
-                 BigDecimal creditLimit, LocalDateTime accountValidity) {
+                 BigDecimal creditLimit, LocalDateTime accountValidity, BigDecimal deposit) {
     this.accountId = accountId;
     this.accountOwner = accountOwner;
     this.accountNumber = accountNumber;
@@ -34,6 +35,7 @@ public class Account {
     this.interestRate = interestRate;
     this.creditLimit = creditLimit;
     this.accountValidity = accountValidity;
+      this.deposit = deposit;
   }
 
   public Integer getAccountId() {
@@ -100,6 +102,14 @@ public class Account {
     this.accountValidity = accountValidity;
   }
 
+    public BigDecimal getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(BigDecimal deposit) {
+        this.deposit = deposit;
+    }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -112,11 +122,14 @@ public class Account {
             Objects.equals(currentBalance, account.currentBalance) &&
             Objects.equals(interestRate, account.interestRate) &&
             Objects.equals(creditLimit, account.creditLimit) &&
-            Objects.equals(accountValidity, account.accountValidity);
+            Objects.equals(accountValidity, account.accountValidity) &&
+            Objects.equals(deposit, account.deposit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(accountId, accountOwner, accountNumber, accountType, currentBalance, interestRate, creditLimit, accountValidity);
+      return Objects.hash(accountId, accountOwner, accountNumber,
+              accountType, currentBalance, interestRate, creditLimit,
+              accountValidity, deposit);
   }
 }

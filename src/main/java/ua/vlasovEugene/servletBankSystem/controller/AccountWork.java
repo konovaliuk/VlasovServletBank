@@ -1,5 +1,6 @@
 package ua.vlasovEugene.servletBankSystem.controller;
 
+import org.apache.log4j.Logger;
 import ua.vlasovEugene.servletBankSystem.service.AccountService;
 
 import javax.servlet.ServletException;
@@ -10,8 +11,9 @@ import java.util.Objects;
 
 public class AccountWork implements Command {
     private AccountService service;
+    private static final Logger LOG = Logger.getLogger(AccountWork.class);
     private final String ADD_MONEY_PAGE = "/WEB-INF/view/addmoneypage.jsp";
-    private final String SEND_CURRENT_BANK = "/WEB-INF/view/currentAccOperation.jsp";
+    private final String SEND_MONEY = "/WEB-INF/view/currentAccOperation.jsp";
 
     public AccountWork() {
         service = new AccountService();
@@ -24,13 +26,16 @@ public class AccountWork implements Command {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String typeOfWork = request.getParameter("typeofwork");
+        LOG.info("Get 'typeofwork' parameter from request: " + typeOfWork);
 
         switch (typeOfWork) {
             case "addmoney":
+                LOG.info("go to page " + ADD_MONEY_PAGE);
                 request.getRequestDispatcher(ADD_MONEY_PAGE).forward(request, response);
                 break;
             case "sendmoney":
-                request.getRequestDispatcher(SEND_CURRENT_BANK).forward(request, response);
+                LOG.info("go to page " + SEND_MONEY);
+                request.getRequestDispatcher(SEND_MONEY).forward(request, response);
                 break;
         }
     }

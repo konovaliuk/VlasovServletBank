@@ -24,18 +24,19 @@
 <c:out value="${sessionScope.accountNumber}"/>
 <br>
 <br>
-<form action="/userpage/workwithaccount" method="post">
-    <input name="typeofwork" type="radio" value="addmoney" required>
+<form action="${pageContext.request.contextPath}workwithaccount" method="post">
+    <label>
+        <input name="typeofwork" type="radio" value="addmoney" required>
+    </label>
     <fmt:message key="addmoney"/>
     <br>
-    <input name="typeofwork" type="radio" value="sendmoney" required>
+    <label>
+        <input name="typeofwork" type="radio" value="sendmoney" required>
+    </label>
     <fmt:message key="sending.money"/>
     <br>
     <input type="submit" value="<fmt:message key="button.workwithacc"/>">
 </form>
-<c:if test="${requestScope.sucessOperation == true}">
-    <fmt:message key="sucess.operation"/>
-</c:if>
 <br>
 <table>
     <tr>
@@ -57,7 +58,7 @@
 <c:out value="${requestScope.exceptionError}"/>
 <br>
 <br>
-<form method="get" action="/userpage">
+<form method="get" action="${pageContext.request.contextPath}userpage">
     <input type="submit" value="<fmt:message key="back.to.userpage"/>">
 </form>
 </body>
