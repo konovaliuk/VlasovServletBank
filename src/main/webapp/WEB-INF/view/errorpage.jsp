@@ -5,13 +5,26 @@
   Time: 14:51
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.currentLang}" scope="session"/>
+<fmt:setBundle basename="pages/errorpage"/>
 <html>
 <head>
     <title>Title</title>
 </head>
 <body>
-
-Opps))) Something goes wrong))
+<fmt:message key="somethinWrong"/>
+<c:if test="${not empty requestScope.daoException}">
+    <fmt:message key="daoEcxeption"/>
+    <br>
+    <c:out value="${requestScope.daoException.getMessage}"/>
+</c:if>
+<fmt:message key="errorcode"/>
+<c:out value="${requestScope.statusCode}"/>
+<br>
+<fmt:message key="errormessage"/>
+<c:out value="${requestScope.throwable.getMessage}"/>
 </body>
 </html>

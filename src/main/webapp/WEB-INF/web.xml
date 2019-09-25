@@ -6,8 +6,17 @@
     <display-name>EpamBankSystem</display-name>
 
     <error-page>
-        <location>/WEB-INF/view/errorpage.jsp</location>
+        <location>/exception</location>
     </error-page>
+    <servlet>
+        <servlet-name>ExceptionHandler</servlet-name>
+        <servlet-class>ua.vlasovEugene.servletBankSystem.controller.servlets.ExceptionHandlerServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ExceptionHandler</servlet-name>
+        <url-pattern>/exception</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>FrontController</servlet-name>

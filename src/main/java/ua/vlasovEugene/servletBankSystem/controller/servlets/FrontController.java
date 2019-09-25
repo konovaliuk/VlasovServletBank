@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public class FrontController extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(FrontController.class);
+    private final String ERRORPAGE = "/WEB-INF/view/errorpage.jsp";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,6 +41,8 @@ public class FrontController extends HttpServlet {
             currentCommand.execute(req, resp);
         } catch (DaoException e) {
             e.printStackTrace();//todo обработать ошибку
+            req.setAttribute("daoException", e);
+            req.getRequestDispatcher(ERRORPAGE).forward(req, resp);
         }
     }
 }
