@@ -8,10 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-/**
- * implementation of the interface for working with MySql table
- * @see ua.vlasovEugene.servletBankSystem.dao.IUserDao
- */
+
 public class MySqlUserDao implements IUserDao {
 
     private final String FIND_USER_BY_EMAIL_AND_PASSWORD = "SELECT * FROM user WHERE user_login_email = ? " +
@@ -23,14 +20,7 @@ public class MySqlUserDao implements IUserDao {
     private final String CHANGE_CREDIT_ACCOUNT_STATUS = "UPDATE user SET user_credit_acc = ? " +
             "WHERE user_login_email = ?";
 
-    /**
-     * The method determines whether a user exists with such a username and password in the table
-     * @param connection input parameter for working with sql database.
-     * @param login User`s login to find
-     * @param password login User`s password to find
-     * @return 'true' if the user record exists and 'false' if the user record is missing
-     * @throws SQLException if something goes wrong this exception will be thrown
-     */
+
     @Override
     public boolean userByEmailIsExist(Connection connection, String login, String password) throws SQLException {
         boolean result = false;
@@ -46,13 +36,6 @@ public class MySqlUserDao implements IUserDao {
         return result;
     }
 
-    /**
-     * Method that returns a user with a specific username and password
-     * @param connection input parameter for working with sql database.
-     * @param user User to find
-     * @return If a user with this username and password exists then he will return. Otherwise, null will return
-     * @throws SQLException if something goes wrong this exception will be thrown
-     */
     @Override
     public User getUserByLoginAndPassword(Connection connection, User user) throws SQLException {
         User currentUser = null;
@@ -75,12 +58,6 @@ public class MySqlUserDao implements IUserDao {
         return currentUser;
     }
 
-    /**
-     * The method adds a new user to the table
-     * @param connection input parameter for working with sql database.
-     * @param newUser User to add
-     * @throws SQLException if something goes wrong this exception will be thrown
-     */
     @Override
     public void addNewUser(Connection connection, User newUser) throws SQLException {
         try(PreparedStatement statement = connection.prepareStatement(ADD_NEW_USER)){

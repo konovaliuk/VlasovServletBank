@@ -9,24 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * implementation of the interface for working with MySql table
- *
- * @see ua.vlasovEugene.servletBankSystem.dao.ICreditRequestDao
- */
+
 public class MySqlCreditRequestDao implements ICreditRequestDao {
     private final String GET_REQUEST_BY_ID = "SELECT * FROM credit_opening_request WHERE request_ID = ?";
     private final String GET_ALL_USER_REQUESTS = "SELECT * FROM credit_opening_request";
     private final String DELETE_CURRENT_REQUEST = "DELETE FROM credit_opening_request WHERE request_ID = ?";
     private final String ADD_NEW_REQUEST = "INSERT INTO credit_opening_request VALUES (null,?,?,?,?)";
 
-    /**
-     * A method that returns all requests for opening credit accounts from all users
-     *
-     * @param connection input parameter for working with sql database.
-     * @return All requests for opening credit accounts in the form of implementation List
-     * @throws SQLException if something goes wrong this exception will be thrown
-     */
+
     @Override
     public List<CreditOpeningRequest> getAllUserRequests(Connection connection) throws SQLException {
         List<CreditOpeningRequest> requests = new ArrayList<>();

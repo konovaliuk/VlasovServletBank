@@ -8,11 +8,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-/**
- * The class inheriting interface "IAccountDao".
- * Implements work with table "account" in MySql database
- * @see ua.vlasovEugene.servletBankSystem.dao.IAccountDao
- * */
 public class MySqlAccountDao implements IAccountDao {
     private final String GET_ALL_ACCOUNTS_OF_CURRENT_USER = "SELECT * FROM account WHERE account_owner = ?";
     private final String GET_ALL_ACCOUNT_NUMBERS = "SELECT account_number FROM account";
@@ -20,13 +15,6 @@ public class MySqlAccountDao implements IAccountDao {
     private final String GET_CURRENT_ACCOUNT = "SELECT * FROM account WHERE account_number = ?";
     private final String CHANGE_BALANCE_OF_CURRENT_ACC = "UPDATE account SET current_balance=? WHERE account_number = ?";
 
-
-    /**
-     * This is the method that returns all account numbers.
-     * @param connection input parameter for working with sql database.
-     * @return returns a collection of accountNumbers in the form of an implementation List.
-     * @throws SQLException if something goes wrong this exception will be thrown.
-     * */
     @Override
     public List<Long> getAllAccountNumbers(Connection connection) throws SQLException {
         List<Long> accountNumbers = new ArrayList<>();
@@ -41,12 +29,6 @@ public class MySqlAccountDao implements IAccountDao {
         return accountNumbers;
     }
 
-    /**
-     * The method adds a new account to the corresponding table
-     * @param connection input parameter for working with sql database.
-     * @param newAccount Entity class with data to be added to the table.
-     * @throws SQLException if something goes wrong this exception will be thrown
-     * */
     @Override
     public void addNewAccount(Connection connection, Account newAccount) throws SQLException {
 
