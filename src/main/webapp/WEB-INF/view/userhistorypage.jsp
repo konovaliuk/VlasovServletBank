@@ -26,7 +26,7 @@
 <br>
 <form action="${pageContext.request.contextPath}workwithaccount" method="post">
     <label>
-        <input name="typeofwork" type="radio" value="addmoney" required>
+        <input name="typeofwork" type="radio" value="addmoney" required checked>
     </label>
     <fmt:message key="addmoney"/>
     <br>

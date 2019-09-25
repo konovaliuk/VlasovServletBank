@@ -22,7 +22,7 @@
             <input hidden name="command" value="sendMoney">
         </label>
         <label>
-            <input type="radio" name="typeOfTransaction" value="currentBank">
+            <input type="radio" name="typeOfTransaction" value="currentBank" checked>
             <fmt:message key="current.bank"/>
         </label>
         <br>
@@ -35,12 +35,14 @@
             <input type="text" name="account" pattern="^[0-9]*[.,]?[0-9]+$"
                    placeholder="<fmt:message key="recipient.account"/>" required>
         </label>
-        <c:if test="${requestScope.noEnoughMoney == true}">
+        <c:if test="${requestScope.noExistAccount == true}">
             <fmt:message key="wrong.rec.acc"/>
         </c:if>
         <br>
-        <input type="text" name="money" pattern="^[0-9]*[.,]?[0-9]+$"
-               placeholder="<fmt:message key="money.count"/>" required>
+        <label>
+            <input type="text" name="money" pattern="^[0-9]*[.,]?[0-9]+$"
+                   placeholder="<fmt:message key="money.count"/>" required>
+        </label>
         <c:if test="${requestScope.noEnoughMoney == true}">
             <fmt:message key="dont.have.money"/>
         </c:if>

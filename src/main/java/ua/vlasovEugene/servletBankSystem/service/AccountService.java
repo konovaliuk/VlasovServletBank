@@ -100,7 +100,6 @@ public class AccountService {
         AtomicBoolean result = new AtomicBoolean(false);
 
         TransactionHandler.runInTransaction(connection -> {
-            //todo не срабатывает
             if (accountDao.getCurrentAccount(connection, accountNumber) != null)
                 result.set(true);
         });
