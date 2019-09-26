@@ -6,6 +6,10 @@ import ua.vlasovEugene.servletBankSystem.controller.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * The type Command container.
+ */
 class CommandContainer {
     private static Map<String,Command> commands = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(CommandContainer.class);
@@ -32,6 +36,12 @@ class CommandContainer {
         commands.put("createNewDepositAccount", new DepositAccCreator());
     }
 
+    /**
+     * Get command command.
+     *
+     * @param uri the uri
+     * @return the command
+     */
     static Command getCommand(String uri){
         if(uri==null||!commands.containsKey(uri)){
             return commands.get("/noCommand");

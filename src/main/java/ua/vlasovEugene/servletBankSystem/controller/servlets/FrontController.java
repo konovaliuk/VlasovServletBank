@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
+/**
+ * The type Front controller.
+ */
 public class FrontController extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(FrontController.class);
     private static final long SLEEP_ONE_DAY = 1000 * 60 * 60 * 24;

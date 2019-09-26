@@ -55,11 +55,32 @@
     </c:forEach>
 </table>
 <br>
+<c:if test="${requestScope.currentPage != 1}">
+    <td><a href="accountoperation?page=${requestScope.currentPage - 1}"><fmt:message key="previous"/></a></td>
+</c:if>
+
+<table>
+    <tr>
+        <c:forEach begin="1" end="${requestScope.numberOfPage}" var="i">
+            <c:choose>
+                <c:when test="${requestScope.currentPage eq i}">
+                    <td>${i}</td>
+                </c:when>
+                <c:otherwise>
+                    <td><a href="accountoperation?page=${i}">${i}</a></td>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
+    </tr>
+</table>
+
+<c:if test="${requestScope.currentPage lt requestScope.numberOfPage}">
+    <td><a href="accountoperation?page=${requestScope.currentPage + 1}"><fmt:message key="next"/></a></td>
+</c:if>
+<br>
 <c:out value="${requestScope.exceptionError}"/>
 <br>
 <br>
-<form method="get" action="${pageContext.request.contextPath}userpage">
-    <input type="submit" value="<fmt:message key="back.to.userpage"/>">
-</form>
+<jsp:include page="logout.jsp"/>
 </body>
 </html>

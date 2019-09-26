@@ -28,6 +28,13 @@ public interface IAccountHistoryDao {
      * @return List<PaymentHistory>
      * @throws SQLException Will be thrown if something goes wrong
      */
-    List<PaymentHistory> getHistoryOfCurrentAccount(Connection connection, Long accountNumber) throws SQLException;
+    List<PaymentHistory> getHistoryOfCurrentAccount(
+            Connection connection, Long accountNumber, int ofset, int limit) throws SQLException;
 
+    /**
+     * @param connection Used to contact the database
+     * @return total count of records in database
+     * @throws SQLException Will be thrown if something goes wrong
+     */
+    int getTotalCountOfRecords(Connection connection) throws SQLException;
 }

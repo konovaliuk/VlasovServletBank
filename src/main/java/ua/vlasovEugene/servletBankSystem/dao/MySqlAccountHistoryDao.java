@@ -12,8 +12,10 @@ import java.util.Objects;
  * @see ua.vlasovEugene.servletBankSystem.dao.IAccountHistoryDao
  */
 public class MySqlAccountHistoryDao implements IAccountHistoryDao {
+    private final String GET_TOTAL_COUNT_OF_RECORDS = "SELECT COUNT(*) FROM payment_history";
     private final String INSERT_NEW_ACTION_NOTE = "INSERT INTO payment_history VALUES (null,?,?,?,?,?)";
-    private final String GET_ALL_ACTION_FOR_CURRENT_ACC = "SELECT * FROM payment_history WHERE account_number = ?";
+    private final String GET_ALL_ACTION_FOR_CURRENT_ACC = "SELECT * FROM payment_history WHERE account_number = ?" +
+            " ORDER BY date_of_transaction DESC LIMIT ? OFFSET ?";
 
     /**
      * The method that creates an entry in the table "payment_history" when a new account is created
@@ -34,11 +36,14 @@ public class MySqlAccountHistoryDao implements IAccountHistoryDao {
     }
 
     @Override
-    public List<PaymentHistory> getHistoryOfCurrentAccount(Connection connection, Long accountNumber) throws SQLException {
+    public List<PaymentHistory> getHistoryOfCurrentAccount(
+            Connection connection, Long accountNumber, int ofset, int limit) throws SQLException {
         List<PaymentHistory> result = new ArrayList<>();
 
         try(PreparedStatement statement = connection.prepareStatement(GET_ALL_ACTION_FOR_CURRENT_ACC)){
             statement.setLong(1,accountNumber);
+            statement.setInt(2, limit);
+            statement.setInt(3, ofset);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 PaymentHistory history = new PaymentHistory();
@@ -54,6 +59,19 @@ public class MySqlAccountHistoryDao implements IAccountHistoryDao {
             }
         }
         return result;
+    }
+
+    @Override
+    public int getTotalCountOfRecords(Connection connection) throws SQLException {
+        int countOfRecords = 0;
+
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(GET_TOTAL_COUNT_OF_RECORDS);
+            while (resultSet.next()) {
+                countOfRecords = resultSet.getInt(1);
+            }
+        }
+        return countOfRecords;
     }
 
     @Override

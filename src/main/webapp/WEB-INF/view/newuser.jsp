@@ -22,7 +22,7 @@
     <title>Title</title>
 </head>
 <body>
-<form method="post" action="${pageContext.request.contextPath}adminpage/addnewuser">
+<form method="post" action="${pageContext.request.contextPath}addnewuser">
     <label>
         <input name="firstname" placeholder="<fmt:message key="user.name"/>" type="text" required>
     </label><br>

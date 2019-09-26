@@ -1,6 +1,8 @@
 package ua.vlasovEugene.servletBankSystem.controller;
 
 import org.apache.log4j.Logger;
+import ua.vlasovEugene.servletBankSystem.entity.Account;
+import ua.vlasovEugene.servletBankSystem.entity.PaymentHistory;
 import ua.vlasovEugene.servletBankSystem.service.AccountService;
 import ua.vlasovEugene.servletBankSystem.utils.exceptions.DaoException;
 
@@ -8,6 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class AccountHistory implements Command {
@@ -47,8 +51,23 @@ public class AccountHistory implements Command {
     }
 
     private void preparePage(HttpServletRequest request, Long accountNumber) throws DaoException {
-        request.setAttribute("history",
-                service.getHistoryOfCurrentAccount(accountNumber));
+        int page = 1;
+        int recordsPerPage = 5;
+        if (request.getParameter("page") != null)
+            page = Integer.parseInt(request.getParameter("page"));
+
+        List<PaymentHistory> history = service.getHistoryOfCurrentAccount(
+                accountNumber, (page - 1) * recordsPerPage, recordsPerPage);
+
+        int numberOfRecord = service.getNumberOfRecord();
+        int numberOfPage = (int) Math.ceil(numberOfRecord * 1.0 / recordsPerPage);
+
+        request.setAttribute("history", history);
+        request.setAttribute("numberOfPage", numberOfPage);
+        request.setAttribute("currentPage", page);
+
+        /*request.setAttribute("history",
+                service.getHistoryOfCurrentAccount(accountNumber));*/
 
         LOG.info("Add list of history of current acc to request");
     }

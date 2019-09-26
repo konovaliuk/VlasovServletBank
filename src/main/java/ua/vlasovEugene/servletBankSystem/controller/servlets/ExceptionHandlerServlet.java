@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The type Exception handler servlet.
+ */
 public class ExceptionHandlerServlet extends HttpServlet {
     private final String ERRORPAGE = "/WEB-INF/webapp/errorpage.jsp";
 

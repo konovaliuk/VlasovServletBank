@@ -64,7 +64,7 @@
 </c:if>
 <br>
 <br>
-<form method="get" action="${pageContext.request.contextPath}adminpage/newuserpage">
+<form method="post" action="${pageContext.request.contextPath}adminpage/newuserpage">
     <input type="submit" value="<fmt:message key="newUser.button" />">
 </form>
 <br>

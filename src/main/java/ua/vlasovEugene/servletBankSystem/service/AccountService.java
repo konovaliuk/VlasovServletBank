@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AccountService {
@@ -65,11 +66,11 @@ public class AccountService {
         });
     }
 
-    public List<PaymentHistory> getHistoryOfCurrentAccount(Long accountNumber) throws DaoException {
+    public List<PaymentHistory> getHistoryOfCurrentAccount(Long accountNumber, int ofset, int limit) throws DaoException {
         AtomicReference<List<PaymentHistory>> accountHistory = new AtomicReference<>();
 
         TransactionHandler.runInTransaction(connection ->
-        accountHistory.set(historyDao.getHistoryOfCurrentAccount(connection, accountNumber))
+                accountHistory.set(historyDao.getHistoryOfCurrentAccount(connection, accountNumber, ofset, limit))
         );
 
         return accountHistory.get();
@@ -193,5 +194,15 @@ public class AccountService {
     @Override
     public int hashCode() {
         return Objects.hash(FACTORY, userDao, accountDao, historyDao);
+    }
+
+    public int getNumberOfRecord() throws DaoException {
+        AtomicInteger countOfRecords = new AtomicInteger(0);
+
+        TransactionHandler.runInTransaction(connection -> {
+            countOfRecords.set(historyDao.getTotalCountOfRecords(connection));
+        });
+
+        return countOfRecords.get();
     }
 }
