@@ -37,13 +37,13 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!--<filter>
+    <filter>
         <filter-name>UserFilter</filter-name>
         <filter-class>ua.vlasovEugene.servletBankSystem.filter.UserFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>UserFilter</filter-name>
-        <url-pattern>/userpage*</url-pattern>
+        <url-pattern>/userpage</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -52,16 +52,16 @@
     </filter>
     <filter-mapping>
         <filter-name>AdminFilter</filter-name>
-        <url-pattern>/adminpage*</url-pattern>
-    </filter-mapping>-->
+        <url-pattern>/adminpage</url-pattern>
+    </filter-mapping>
 
     <!--<filter>
         <filter-name>AuthFilter</filter-name>
-        <filter-class>ua.vlasovEugene.epamBankSystem.filter.AuthFilter</filter-class>
+        <filter-class>ua.vlasovEugene.servletBankSystem.filter.AuthFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/</url-pattern>
     </filter-mapping>-->
 
     <resource-ref>
@@ -71,6 +71,5 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
-    <!--сконфигурячить ErrorPage-->
 
 </web-app>
