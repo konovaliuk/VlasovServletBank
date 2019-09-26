@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class MySqlAccountDao implements IAccountDao {
+    private final String GET_ALL_ACCOUNTS = "SELECT * FROM account";
     private final String GET_ALL_ACCOUNTS_OF_CURRENT_USER = "SELECT * FROM account WHERE account_owner = ?";
     private final String GET_ALL_ACCOUNT_NUMBERS = "SELECT account_number FROM account";
     private final String ADD_NEW_ACCOUNT = "INSERT INTO account VALUES (null,?,?,?,?,?,?,?,?)";
@@ -53,12 +54,7 @@ public class MySqlAccountDao implements IAccountDao {
             statement.setLong(1,accountNumber);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-                result = new Account();
-                result.setAccountNumber(resultSet.getLong("account_number"));
-                result.setCurrentBalance(resultSet.getBigDecimal("current_balance"));
-                result.setAccountType(resultSet.getString("account_type"));
-                result.setDeposit(resultSet.getBigDecimal("deposit"));
-                result.setCreditLimit(resultSet.getBigDecimal("credit_limit"));
+                result = getAccount(resultSet);
             }
         }
         return result;
@@ -83,17 +79,7 @@ public class MySqlAccountDao implements IAccountDao {
             statement.setString(1,currentUser.getUserLoginEmail());
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-                Account account = new Account(
-                        resultSet.getInt("account_ID"),
-                        resultSet.getString("account_owner"),
-                        resultSet.getLong("account_number"),
-                        resultSet.getString("account_type"),
-                        resultSet.getBigDecimal("current_balance"),
-                        resultSet.getBigDecimal("interest_rate"),
-                        resultSet.getBigDecimal("credit_limit"),
-                        resultSet.getTimestamp("account_validity").toLocalDateTime(),
-                        resultSet.getBigDecimal("deposit")
-                );
+                Account account = getAccount(resultSet);
                 if(account.getAccountType().equals("credit")){
                     creditAcc.add(account);
                 } else if (account.getAccountType().equals("deposit")){
@@ -105,6 +91,20 @@ public class MySqlAccountDao implements IAccountDao {
         accounts.put("depositAccounts",depAcc);
 
         return accounts;
+    }
+
+    private Account getAccount(ResultSet resultSet) throws SQLException {
+        return new Account(
+                resultSet.getInt("account_ID"),
+                resultSet.getString("account_owner"),
+                resultSet.getLong("account_number"),
+                resultSet.getString("account_type"),
+                resultSet.getBigDecimal("current_balance"),
+                resultSet.getBigDecimal("interest_rate"),
+                resultSet.getBigDecimal("credit_limit"),
+                resultSet.getTimestamp("account_validity").toLocalDateTime(),
+                resultSet.getBigDecimal("deposit")
+        );
     }
 
     @Override
@@ -125,6 +125,20 @@ public class MySqlAccountDao implements IAccountDao {
                 result = result.add(resultSet.getBigDecimal("deposit"));
             }
         }
+        return result;
+    }
+
+    @Override
+    public List<Account> getAllAccounts(Connection connection) throws SQLException {
+        List<Account> result = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(GET_ALL_ACCOUNTS);
+            while (resultSet.next()) {
+                Account account = getAccount(resultSet);
+                result.add(account);
+            }
+        }
+
         return result;
     }
 

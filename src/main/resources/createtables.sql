@@ -1,3 +1,5 @@
+create database if not exists epamproject;
+
 create table if not exists account_type
 (
     account_type_ID int auto_increment
@@ -20,14 +22,15 @@ create table if not exists user_role
 
 create table if not exists user
 (
-    user_id int auto_increment
+    user_id               int auto_increment
         primary key,
-    user_firstname varchar(100) null,
-    user_secondname varchar(100) null,
-    user_login_email varchar(100) null,
-    user_password varchar(20) null,
-    user_role varchar(50) null,
-    user_credit_acc tinyint(1) default 0 null,
+    user_firstname        varchar(100)         null,
+    user_secondname       varchar(100)         null,
+    user_login_email      varchar(100)         null,
+    user_password         varchar(20)          null,
+    user_role             varchar(50)          null,
+    user_credit_acc       tinyint(1) default 0 null,
+    credit_request_status tinyint(1) default 0 null,
     constraint user_user_email_login_uindex
         unique (user_login_email),
     constraint user_user_login_emali_uindex
@@ -80,6 +83,7 @@ create table if not exists payment_history
     constraint payment_history_account_account_number_fk
         foreign key (account_number) references account (account_number)
 );
+
 
 
 INSERT INTO `epamproject`.`user`

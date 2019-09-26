@@ -69,4 +69,6 @@ public interface IAccountDao {
      * @throws SQLException It will be thrown in case of a database error
      */
     BigDecimal getTotalUsersBalanceAfter6Year(Connection connection, User user, LocalDateTime afterSixMonts) throws SQLException;
+
+    List<Account> getAllAccounts(Connection connection) throws SQLException;
 }

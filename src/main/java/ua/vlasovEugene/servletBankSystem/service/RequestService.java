@@ -100,6 +100,8 @@ public class RequestService{
     }
 
     private Account getCreditAcc(Connection connection, CreditOpeningRequest currentRequest) throws SQLException {
+        BigDecimal creditLimit = currentRequest.getExpectedCreditLimit().negate();
+
         return new Account(
                 null,
                 currentRequest.getUserEmailLogin(),
@@ -107,7 +109,7 @@ public class RequestService{
                 "credit",
                 new BigDecimal("0"),
                 new BigDecimal("10"),
-                currentRequest.getExpectedCreditLimit(),
+                creditLimit,
                 currentRequest.getDateOfEndCredit(),
                 new BigDecimal(0)
         );

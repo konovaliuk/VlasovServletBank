@@ -26,7 +26,9 @@ public class MoneySender implements Command {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, DaoException {
         Long currentAccount = Long.valueOf((String) request.getSession().getAttribute("accountNumber"));
-        BigDecimal countOfMoney = new BigDecimal(request.getParameter("money").replace(',','.'));
+        BigDecimal countOfMoney = new BigDecimal(request.getParameter("money")
+                .replace(',', '.'))
+                .negate();
         Long recipientAccountNumber = Long.valueOf(request.getParameter("account"));
         boolean intrabankOperation = request.getParameter("typeOfTransaction").equals("currentBank");
 

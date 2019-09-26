@@ -113,18 +113,10 @@ public class AccountService {
         TransactionHandler.runInTransaction(connection -> {
             Account account = accountDao.getCurrentAccount(connection,currentAccount);
 
+            result.set(account.getCurrentBalance()
+                    .add(countOfMoney)
+                    .compareTo(account.getCreditLimit()) >= 0);
 
-            if(account.getAccountType().equals("deposit")){
-                if (account.getCurrentBalance().subtract(account.getDeposit()).
-                        subtract(countOfMoney).signum() > 0)
-                    result.set(true);
-            }
-
-            if(account.getAccountType().equals("credit")){
-                if (account.getCurrentBalance().add(account.getCreditLimit())
-                        .subtract(countOfMoney).signum() > 0)
-                    result.set(true);
-            }
         });
         return result.get();
     }
