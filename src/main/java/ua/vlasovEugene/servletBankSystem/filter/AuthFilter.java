@@ -29,7 +29,7 @@ public class AuthFilter implements Filter {
             if(login!=null&&password!=null){
                 filterChain.doFilter(servletRequest,servletResponse);
             } else {
-                response.sendRedirect("/");
+                request.getRequestDispatcher(INDEX_PAGE).forward(request, response);
             }
         }
     }

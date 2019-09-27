@@ -55,14 +55,14 @@
         <url-pattern>/adminpage</url-pattern>
     </filter-mapping>
 
-    <!--<filter>
+    <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>ua.vlasovEugene.servletBankSystem.filter.AuthFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
         <url-pattern>/</url-pattern>
-    </filter-mapping>-->
+    </filter-mapping>
 
     <resource-ref>
         <description>MySQL DB Connection Pool</description>
